@@ -4,7 +4,21 @@ Record of AI assistance (Claude Code) used in this project. Each entry lists the
 
 ---
 
-## 1. Basic Express server setup — 2026-10-03
+
+## 1. AI log process — 2026-10-03
+
+**Prompt:**
+> After every development step, automatically update AI_LOG.md with a short, factual entry containing the actual prompt/request, what you suggested, and what I actually changed or tested; never invent anything.
+
+**AI suggested:** Add a project `CLAUDE.md` with this rule so it applies in future sessions, and write log entries for steps 1 and 2.
+
+**Changed:** Created `CLAUDE.md` and wrote this file (`AI_LOG.md`).
+
+**Tested:** Nothing (documentation only).
+
+---
+
+## 2. Basic Express server setup — 2026-10-03
 
 **Prompt:**
 > I've started a small URL shortener project. Backend is Node.js 24 with Express. I want to keep the backend structure simple for now. Can you help me set up the basic Express server? I need: server.js, dotenv, cors, express.json(), a simple GET / route to check whether the server is running, basic 404 handling, basic error handling. Please keep it clean and don't add anything that we don't need yet. For now, skip MongoDB, models, controllers and the actual URL shortening APIs. Also tell me what packages I need to install and what I should put in package.json for npm run dev.
@@ -26,20 +40,6 @@ Record of AI assistance (Claude Code) used in this project. Each entry lists the
 - `POST /` with invalid JSON body → 400 with the JSON parse error message
 
 ---
-
-## 2. AI log process — 2026-10-03
-
-**Prompt:**
-> After every development step, automatically update AI_LOG.md with a short, factual entry containing the actual prompt/request, what you suggested, and what I actually changed or tested; never invent anything.
-
-**AI suggested:** Add a project `CLAUDE.md` with this rule so it applies in future sessions, and write log entries for steps 1 and 2.
-
-**Changed:** Created `CLAUDE.md` and wrote this file (`AI_LOG.md`).
-
-**Tested:** Nothing (documentation only).
-
----
-
 ## 3. Url model and urlShortener controller — 2026-10-03
 
 **Prompt:**
@@ -67,5 +67,32 @@ Record of AI assistance (Claude Code) used in this project. Each entry lists the
 - The schema's index list includes `{ shortCode: 1 }` with `{ unique: true }`.
 - Not tested: saving to a real MongoDB, or the unique index being created in a real database.
 
+---
+
+## 4. Routes — 2026-10-03
+
+**Prompt** (originally in Hinglish, translated):
+> The model and controller are done. Now create the routes. … POST /api/shorten, GET /:code … The GET route should do a 302 redirect, and if the code is not found it should return a proper 404 response.
+
+**AI suggested / changed:**
+- Added `redirectToUrl` to the controller: 302 to `originalUrl`, 404 `"Short URL not found"` if the code doesn't exist.
+- Created `routes/urlRoutes.js` and mounted it in `server.js`.
+
+**Tested:** HTTP requests with the model stubbed (no real DB): POST → 201, `GET /<code>` → 302, unknown code → 404, invalid URL → 400.
+
+---
 
 
+## 5. Review and fixes — 2026-10-03
+
+**Prompt:**
+> Please review the whole project … check all flow
+
+> … fix the remaining frontend shortUrl/error handling issues and add the required .env.example and README setup details. Also remove node_modules from Git tracking …
+
+**AI suggested / changed:**
+- The review found that the frontend read `data.shortUrl` and `data.error`, which the backend didn't send.
+- Fix: the backend returns `shortUrl` (built from `BASE_URL`); `App.jsx` reads `data.data.shortUrl` and `data.message`.
+- Added `.env.example` (backend and frontend), rewrote `README.md`, and untracked `backend/node_modules` (`git rm -r --cached`).
+
+**Tested:** Fresh-clone simulation following the README (`npm install`, `.env.example` → `.env`): POST → 201 with `shortUrl`, the short link gives a 302, an invalid URL shows the backend message, unknown code → 404, `vite build` succeeds. Not tested in a real browser.
