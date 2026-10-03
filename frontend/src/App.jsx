@@ -33,12 +33,13 @@ export default function App() {
       const res = await fetch(`${API_BASE}/shorten`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: trimmed }),
+        body: JSON.stringify({originalUrl: trimmed }),
       })
+      console.log
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+      if (!res.ok) throw new Error(data.message || `Request failed (${res.status})`)
 
-      setLinks((prev) => [{ original: trimmed, short: data.shortUrl }, ...prev])
+      setLinks((prev) => [{ original: trimmed, short: data.data.shortUrl }, ...prev])
       setUrl('')
     } catch (err) {
       setError(
